@@ -62,7 +62,7 @@ public class MixDuplexPDFs {
 			if (outfilePath != null) {
 				outfile = new File(outfilePath);
 			} else {
-				outfile = File.createTempFile("mixDuplexPDFs", ".tmp");
+				outfile = File.createTempFile("mixDuplexPDFs", ".tmp.pdf");
 			}
 
 			PDDocument evenPages = PDDocument.load(new File(evenPagesPdfPath), new RandomAccessBuffer());
