@@ -1,17 +1,16 @@
-package mixDuplexPDFs;
+package org.waehner.oc.mixduplexpdfs;
+
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -40,8 +39,8 @@ public class MixDuplexPDFs {
 		formatter.printHelp("java -jar mixDuplexPDFs.jar", options, true);
 	}
 
-	public static void main(String args[]) throws IOException, COSVisitorException, ParseException {
-		CommandLineParser parser = new GnuParser();
+	public static void main(String args[]) throws IOException, ParseException {
+		CommandLineParser parser = new DefaultParser();
 		CommandLine commandLine;
 		try {
 			commandLine = parser.parse(options, args);
@@ -64,9 +63,8 @@ public class MixDuplexPDFs {
 			} else {
 				outfile = File.createTempFile("mixDuplexPDFs", ".tmp.pdf");
 			}
-
-			PDDocument evenPages = PDDocument.load(new File(evenPagesPdfPath), new RandomAccessBuffer());
-			PDDocument oddPages = PDDocument.load(new File(oddPagesPdfPath), new RandomAccessBuffer());
+			PDDocument evenPages = PDDocument.load(new File(evenPagesPdfPath));
+			PDDocument oddPages = PDDocument.load(new File(oddPagesPdfPath));
 
 			try (PDDocument result = new PDDocument();) {
 				int index = 0;
@@ -90,8 +88,8 @@ public class MixDuplexPDFs {
 	}
 
 	private static PDPage getEvenPageIfExists(PDDocument doc, int pageIndex) {
-		if (doc.getDocumentCatalog().getAllPages().size() > pageIndex) {
-			return (PDPage) doc.getDocumentCatalog().getAllPages().get(pageIndex);
+		if (doc.getPages().getCount() > pageIndex) {
+			return (PDPage) doc.getPage(pageIndex);
 		}
 
 		return null;
@@ -101,7 +99,7 @@ public class MixDuplexPDFs {
 		int pageNum = doc.getNumberOfPages() - 1 - pageIndex;
 
 		if (pageNum >= 0) {
-			return (PDPage) doc.getDocumentCatalog().getAllPages().get(pageNum);
+			return (PDPage) doc.getPage(pageNum);
 		}
 
 		return null;
